@@ -11,7 +11,7 @@ import throttle from 'lodash/throttle'
 import { action, computed, observable, runInAction, toJS } from 'mobx'
 import React, { createRef } from 'react'
 import { HEADER_HEIGHT, TOP_PADDING } from './constants'
-import { GanttProps as GanttProperties, GanttLocale, defaultLocale } from './Gantt'
+import { defaultLocale, GanttLocale, GanttProps as GanttProperties } from './Gantt'
 import { Gantt } from './types'
 import { flattenDeep, transverseData } from './utils'
 
@@ -87,7 +87,7 @@ class GanttStore {
     this.locale = locale
   }
 
-  locale = {...defaultLocale}
+  locale = { ...defaultLocale }
 
   _wheelTimer: number | undefined
 
@@ -504,13 +504,11 @@ class GanttStore {
     }
     const getMinorKey = (date: Dayjs) => {
       if (this.sightConfig.type === 'halfYear')
-        return (
-          date.format(format) +
-          (fstHalfYear.has(date.month())
-            ? this.locale.firstHalf
-            : this.locale.secondHalf)
-        )
-
+        return date.format(format) + (fstHalfYear.has(date.month()) ? this.locale.firstHalf : this.locale.secondHalf)
+      if (this.sightConfig.type === 'week') {
+        const weekInMonth = Math.ceil((date.date() - dayjs(date).startOf('month').day() + 1) / 7)
+        return `${weekInMonth}w`
+      }
       return date.format(format)
     }
 
